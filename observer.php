@@ -17,9 +17,10 @@ class WeatherStation implements SplSubject
             $this->observers->detach($observer);
         }
 
+
         public function notify (){
             foreach($this->observers  as $observer){
-                $observer->update($this);
+                $observer->update();
             }
     }
 
@@ -33,14 +34,26 @@ class WeatherStation implements SplSubject
     }
 }
 
-class subscriber implements SplObserver
+/* observer */
+
+interface MyObservable{
+    public function update();
+}
+
+class subscriber implements MyObservable
 {
-    public function update(SplSubject $observable) {
+    private $observable;
+
+    public function __construct(SplSubject $observable){
+        $this->observable = $observable;
+    }
+
+    public function update() {
         echo "temprature update " . $observable->getTemperature() . "\n";
     }
 }
 
 $station = new WeatherStation();
-$user = new subscriber();
+$user = new subscriber($station);
 $station->attach($user);
 $station->setTemperature(25);
